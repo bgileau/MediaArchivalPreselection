@@ -1,71 +1,59 @@
 // ==UserScript==
 // @name         Media Archival Site Pre-filtering
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Preselects a language/type filtering on a media archival site
 // @include      https://nyaa.si/
 // @grant        none
 // ==/UserScript==
 
 (function() {
-    'use strict';
+  'use strict'
 
-    function open_category_menu() {
-        const dropdown_highlevel_element = document.getElementById("navFilter-category");
-        const category_button = dropdown_highlevel_element.getElementsByClassName("btn dropdown-toggle btn-default");
+  setTimeout(function() {
+    const dropdown_highlevel_element = document.getElementById("navFilter-category")
+    const category_button = dropdown_highlevel_element.getElementsByClassName("btn dropdown-toggle btn-default")
+    const select_element = dropdown_highlevel_element.getElementsByClassName("selectpicker show-tick")
+    const option_element = select_element[0].querySelector('option[value="1_2"]')
+    const search_highlevel_element = document.getElementById("navbar")
+    const search_element = search_highlevel_element.getElementsByClassName("btn btn-primary")
+    
+    // const delay = ms => new Promise(res => setTimeout(res, ms))
+    
+    click_event(category_button[0])  // open menu
+    select_option(select_element[0], option_element.value)
+    push_option_change(select_element[0])
+    click_event(category_button[0])  // close menu
+    //console.log("searching")
+    //search(search_element[0]) // hit search (TODO: not properly taking menu changes into account yet)
+    
+  }, 1000);
 
-        category_button[0].dispatchEvent(new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        }));
-    }
+  function click_event(button) {
+    button.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      view: window
+    }))
+  }
 
-    function select_category_option() {
-        const dropdown_highlevel_element = document.getElementById("navFilter-category");
-        const select_element = dropdown_highlevel_element.getElementsByClassName("selectpicker show-tick");
-        const option_element = select_element[0].querySelector('option[value="1_2"]');
+  function select_option(select, value) {
+    select.value = value
+  }
 
-        select_element[0].value = option_element.value;
-        select_element[0].dispatchEvent(new MouseEvent('change', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        }));
-    }
-
-    function close_category_menu() {
-        const dropdown_highlevel_element = document.getElementById("navFilter-category");
-        const category_button = dropdown_highlevel_element.getElementsByClassName("btn dropdown-toggle btn-default");
-
-        category_button[0].dispatchEvent(new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        }));
-    }
-
-    function search(){
-        const search_highlevel_element = document.getElementById("navbar");
-        console.log(search_highlevel_element)
-        const search_button = search_highlevel_element.getElementsByClassName("btn btn-primary")[0];
-        console.log(search_button)
-
-        search_button.dispatchEvent(new MouseEvent("click", {
-            bubbles: true,
-            cancelable: true,
-            view: window
-          }));
-    }
-
-    setTimeout(function() {
-        open_category_menu();
-        select_category_option();
-        close_category_menu();
-        console.log("search");
-        // search();
-        // setTimeout(function() {
-        //     search();
-        // }, 2000);
-    }, 1000);
+  function push_option_change(select) {
+    select.dispatchEvent(new MouseEvent('change', {
+      bubbles: true,
+      cancelable: true,
+      view: window
+    }))
+  }
+  
+  function search(search_element){
+    search_element.dispatchEvent(new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      view: window
+    }));
+  }
 })();
