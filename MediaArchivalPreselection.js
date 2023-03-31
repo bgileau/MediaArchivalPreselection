@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Media Archival Site Pre-filtering
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  Preselects a language/type filtering on a media archival site
 // @include      https://nyaa.si/
 // @grant        none
@@ -17,17 +17,19 @@
     const option_element = select_element[0].querySelector('option[value="1_2"]')
     const search_highlevel_element = document.getElementById("navbar")
     const search_element = search_highlevel_element.getElementsByClassName("btn btn-primary")
-    
-    // const delay = ms => new Promise(res => setTimeout(res, ms))
-    
+    const search_form = document.getElementById("searchform")
+
     click_event(category_button[0])  // open menu
     select_option(select_element[0], option_element.value)
     push_option_change(select_element[0])
     click_event(category_button[0])  // close menu
-    //console.log("searching")
-    //search(search_element[0]) // hit search (TODO: not properly taking menu changes into account yet)
-    
-  }, 1000);
+
+    setTimeout(() => {
+      console.log('searching');
+      search(option_element.value);
+    }, 200);
+
+  }, 500);
 
   function click_event(button) {
     button.dispatchEvent(new MouseEvent('click', {
@@ -48,12 +50,10 @@
       view: window
     }))
   }
-  
-  function search(search_element){
-    search_element.dispatchEvent(new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      view: window
-    }));
+
+  function search(category_value) {
+    const baseURL = 'https://nyaa.si/?f=0&c=';
+    const query = '&q=';
+    window.location.href = baseURL + category_value + query;
   }
 })();
